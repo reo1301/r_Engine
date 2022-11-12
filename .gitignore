@@ -1,4 +1,5 @@
 *.user
 Debug/
 Release/
+.vs/
 x64/
