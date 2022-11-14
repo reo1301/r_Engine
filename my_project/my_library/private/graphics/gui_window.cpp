@@ -1,4 +1,4 @@
-#include "graphics/gui_window.h"
+#include "public/graphics/gui_window.h"
 #include <Windows.h>
 
 MY_LIB_NAMESPACE_BEGIN
@@ -57,7 +57,7 @@ bool CGUIWindow::Initialize(const InitData& _initData)
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 	wc.lpszMenuName = nullptr;
-	wc.lpszClassName = _initData.appName.c_str();
+	wc.lpszClassName = _initData.appName;
 
 	//ウィンドウクラスを登録
 	if (!RegisterClass(&wc))
@@ -68,8 +68,8 @@ bool CGUIWindow::Initialize(const InitData& _initData)
 	//ウィンドウを作成
 	hwnd = CreateWindow
 	(
-		_initData.appName.c_str(),
-		_initData.appName.c_str(),				//ウィンドウの名前
+		_initData.appName,
+		_initData.appName,				//ウィンドウの名前
 		WS_OVERLAPPEDWINDOW,
 		0, 0,									//ウィンドウの座標
 		_initData.width, _initData.height,		//ウィンドウのサイズ

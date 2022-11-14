@@ -2,7 +2,6 @@
 
 //インクルード
 #include <string>
-#include "../my_lib_def.h"
 
 MY_LIB_NAMESPACE_BEGIN
 
@@ -13,10 +12,10 @@ public:
 	//初期化データ
 	struct InitData
 	{
-		void* hInstance = nullptr;		//インスタンスハンドル
-		std::wstring appName;			//ウィンドウの名前
-		unsigned int width = 0;			//ウィンドウの横幅
-		unsigned int height = 0;		//ウィンドウの縦幅
+		void* hInstance = nullptr;			//インスタンスハンドル
+		const char* appName = nullptr;		//ウィンドウの名前
+		unsigned int width = 0;				//ウィンドウの横幅
+		unsigned int height = 0;			//ウィンドウの縦幅
 	};
 
 public:
