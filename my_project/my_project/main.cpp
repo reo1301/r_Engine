@@ -16,11 +16,15 @@ int WINAPI WinMain(_In_ HINSTANCE _hInstance, _In_opt_  HINSTANCE /*_hPrevInstan
 	guiWindow.Initialize(initData);
 
 	//メッセージループ
-	MSG msg;
-	while (GetMessage(&msg, nullptr, 0, 0) > 0)
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+	MSG msg = {};
+	while (msg.message != WM_QUIT) {
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		//ここから毎フレーム行う処理を書いていく
 	}
 
 	guiWindow.Finalize();
