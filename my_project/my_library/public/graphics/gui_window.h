@@ -15,6 +15,8 @@ public:
 	{
 		void* hInstance = nullptr;		//インスタンスハンドル
 		std::wstring appName;			//ウィンドウの名前
+		unsigned int width = 0;			//ウィンドウの横幅
+		unsigned int height = 0;		//ウィンドウの縦幅
 	};
 
 public:

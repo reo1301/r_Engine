@@ -69,10 +69,10 @@ bool CGUIWindow::Initialize(const InitData& _initData)
 	hwnd = CreateWindow
 	(
 		_initData.appName.c_str(),
-		_initData.appName.c_str(),		//ウィンドウの名前
+		_initData.appName.c_str(),				//ウィンドウの名前
 		WS_OVERLAPPEDWINDOW,
-		0, 0,							//ウィンドウの座標
-		800, 600,						//ウィンドウのサイズ
+		0, 0,									//ウィンドウの座標
+		_initData.width, _initData.height,		//ウィンドウのサイズ
 		nullptr,
 		nullptr,
 		hInstance,
