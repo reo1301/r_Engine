@@ -9,6 +9,9 @@
       <Filter>public\window</Filter>
     </ClInclude>
     <ClInclude Include="noncopyable.h" />
+    <ClInclude Include="public\graphics\graphics_engine.h">
+      <Filter>public\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="public">
@@ -36,6 +39,9 @@
     </ClCompile>
     <ClCompile Include="private\window\console_window.cpp">
       <Filter>private\window</Filter>
+    </ClCompile>
+    <ClCompile Include="private\graphics\graphics_engine.cpp">
+      <Filter>private\graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
