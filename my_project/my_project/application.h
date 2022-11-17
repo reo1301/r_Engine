@@ -1,9 +1,13 @@
 #pragma once
 
+//インクルード
+//コピー禁止
+#include "../noncopyable.h"
+
 GAME_NAMESPACE_BEGIN
 
 //CApplication
-class CApplication
+class CApplication : private Noncopyable
 {
 private:
 	/// @brief コンストラクタ

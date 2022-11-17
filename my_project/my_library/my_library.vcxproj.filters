@@ -8,6 +8,7 @@
     <ClInclude Include="public\window\console_window.h">
       <Filter>public\window</Filter>
     </ClInclude>
+    <ClInclude Include="noncopyable.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="public">

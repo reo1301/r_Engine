@@ -1,8 +1,12 @@
 #pragma once
 
+//インクルード
+//コピー禁止
+#include "../noncopyable.h"
+
 MY_LIB_NAMESPACE_BEGIN
 
-class CConsoleWindow
+class CConsoleWindow : private Noncopyable
 {
 private:
 	/// @brief コンストラクタ

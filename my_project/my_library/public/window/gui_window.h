@@ -1,12 +1,15 @@
 #pragma once
 
 //インクルード
+//コピー禁止
+#include "../noncopyable.h"
+//標準ライブラリ
 #include <string>
 
 MY_LIB_NAMESPACE_BEGIN
 
 //GUIWindow
-class CGUIWindow
+class CGUIWindow : private Noncopyable
 {
 public:
 	//初期化データ

@@ -2,6 +2,9 @@
 //標準ライブラリ
 #include <Windows.h>
 
+//define系
+#include "../my_lib_def.h"
+
 //ウィンドウ系
 #include "window/gui_window.h"
 #include "window/console_window.h"
