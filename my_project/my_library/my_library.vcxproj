@@ -149,11 +149,13 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="public\window\console_window.h" />
     <ClInclude Include="my_lib_def.h" />
-    <ClInclude Include="public\graphics\gui_window.h" />
+    <ClInclude Include="public\window\gui_window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="private\graphics\gui_window.cpp" />
+    <ClCompile Include="private\window\console_window.cpp" />
+    <ClCompile Include="private\window\gui_window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

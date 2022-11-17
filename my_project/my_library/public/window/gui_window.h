@@ -18,10 +18,11 @@ public:
 		unsigned int height = 0;			//ウィンドウの縦幅
 	};
 
-public:
+private:
 	/// @brief コンストラクタ
 	CGUIWindow();
 
+public:
 	/// @brief デストラクタ
 	~CGUIWindow();
 
@@ -35,9 +36,18 @@ public:
 	void Finalize();
 
 private:
-	/// @brief 解放処理
-	void Release();
+	static CGUIWindow* s_instance;		//シングルトンのインスタンス
 
+public:
+	/// @brief シングルトンのインスタンス生成
+	static void CreateInstance();
+
+	/// @brief CGUIWindowのインスタンス取得
+	/// @return CGUIWindowのインスタンスの参照
+	static CGUIWindow& GetInstance();
+
+	/// @brief シングルトンのインスタンス削除
+	static void Delete();
 };
 
 MY_LIB_NAMESPACE_END

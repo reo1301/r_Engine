@@ -1,10 +1,9 @@
 #include "application.h"
-#include <cstdlib>
 
 GAME_NAMESPACE_BEGIN
 
 //初期化
-CApplication* CApplication::m_instance = nullptr;
+CApplication* CApplication::s_instance = nullptr;
 
 /// @brief コンストラクタ
 CApplication::CApplication()
@@ -14,12 +13,6 @@ CApplication::CApplication()
 
 /// @brief デストラクタ
 CApplication::~CApplication()
-{
-	Release();
-}
-
-/// @brief 解放処理
-void CApplication::Release()
 {
 
 }
@@ -46,9 +39,9 @@ void CApplication::Update()
 void CApplication::CreateInstance()
 {
 	//インスタンスがまだないとき生成
-	if (!m_instance)
+	if (!s_instance)
 	{
-		m_instance = new CApplication();
+		s_instance = new CApplication();
 	}
 }
 
@@ -56,20 +49,20 @@ void CApplication::CreateInstance()
 /// @return CApplicationのインスタンスの参照
 CApplication& CApplication::GetInstance()
 {
-	if (!m_instance)
+	if (!s_instance)
 	{
 		throw;
 	}
-	return *m_instance;
+	return *s_instance;
 }
 
 /// @brief シングルトンのインスタンス削除
 void CApplication::Delete()
 {
-	if (m_instance)
+	if (s_instance)
 	{
-		delete m_instance;
-		m_instance = nullptr;
+		delete s_instance;
+		s_instance = nullptr;
 	}
 }
 

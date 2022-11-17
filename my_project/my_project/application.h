@@ -24,11 +24,7 @@ public:
 	void Update();
 
 private:
-	/// @brief 解放処理
-	void Release();
-
-private:
-	static CApplication* m_instance;		//シングルトンのインスタンス
+	static CApplication* s_instance;		//シングルトンのインスタンス
 
 public:
 	/// @brief シングルトンイのインスタンスの生成

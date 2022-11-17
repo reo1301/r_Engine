@@ -1,10 +1,40 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="public\graphics\gui_window.h" />
     <ClInclude Include="my_lib_def.h" />
+    <ClInclude Include="public\window\gui_window.h">
+      <Filter>public\window</Filter>
+    </ClInclude>
+    <ClInclude Include="public\window\console_window.h">
+      <Filter>public\window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="private\graphics\gui_window.cpp" />
+    <Filter Include="public">
+      <UniqueIdentifier>{def19ed5-627f-46bb-86f1-a1d3a09e6c19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="private">
+      <UniqueIdentifier>{314e89f1-ae97-47cf-a1f5-07a55aaa1bef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="private\graphics">
+      <UniqueIdentifier>{8440aa5e-1aa2-49a0-849c-5da861c8e69d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\graphics">
+      <UniqueIdentifier>{58ff3590-3889-47d9-9f8f-8f8bd60620e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\window">
+      <UniqueIdentifier>{be5adad7-a578-4310-b3cf-e03cecb528de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="private\window">
+      <UniqueIdentifier>{45bef279-2d70-4603-bef2-26fb61f61147}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="private\window\gui_window.cpp">
+      <Filter>private\window</Filter>
+    </ClCompile>
+    <ClCompile Include="private\window\console_window.cpp">
+      <Filter>private\window</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
