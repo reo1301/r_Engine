@@ -58,7 +58,7 @@ CConsoleWindow& CConsoleWindow::GetInsntance()
 /// @brief シングルトンのインスタンス削除
 void CConsoleWindow::Delete()
 {
-	if (!s_instance)
+	if (s_instance)
 	{
 		delete s_instance;
 		s_instance = nullptr;

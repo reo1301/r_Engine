@@ -121,7 +121,7 @@ CGUIWindow& CGUIWindow::GetInstance()
 /// @brief シングルトンのインスタンス削除
 void CGUIWindow::Delete()
 {
-	if (!s_instance)
+	if (s_instance)
 	{
 		delete s_instance;
 		s_instance = nullptr;
