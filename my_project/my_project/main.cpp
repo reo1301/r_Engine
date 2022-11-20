@@ -2,18 +2,16 @@
 //標準ライブラリ
 #include <Windows.h>
 
-//define系
-#include "../my_lib_def.h"
-
 //ウィンドウ系
 #include "window/gui_window.h"
-#include "window/console_window.h"
 
 //ゲーム系
 #include "application.h"
 
-using namespace MY_LIB_NAMESPACE;
-using namespace GAME_NAMESPACE;
+#ifdef _DEBUG
+//ウィンドウ系
+#include "window/console_window.h"
+#endif
 
 /// @brief 初期化処理
 void Initialize(HINSTANCE _hInstance);
@@ -50,11 +48,13 @@ int WINAPI WinMain(_In_ HINSTANCE _hInstance, _In_opt_  HINSTANCE /*_hPrevInstan
 /// @param _hInstance インスタンスハンドル
 void Initialize(HINSTANCE _hInstance)
 {
+#ifdef _DEBUG
 	{
 		//コンソールウィンドウの初期化処理
 		CConsoleWindow::CreateInstance();
 		CConsoleWindow::GetInsntance().Initialize();
 	}
+#endif
 
 	{
 		//ウィンドウの初期化処理
@@ -89,11 +89,13 @@ void Finalize()
 		CGUIWindow::Delete();
 	}
 
+#ifdef _DEBUG
 	{
 		//コンソールウィンドウの終了処理
 		CConsoleWindow::GetInsntance().Finalize();
 		CConsoleWindow::Delete();
 	}
+#endif
 }
 
 /// @brief 更新処理

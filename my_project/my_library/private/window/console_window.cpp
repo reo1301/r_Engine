@@ -1,3 +1,5 @@
+#ifdef _DEBUG
+
 #include "window/console_window.h"
 
 //インクルード
@@ -75,3 +77,5 @@ void CConsoleWindow::Delete()
 }
 
 MY_LIB_NAMESPACE_END
+
+#endif

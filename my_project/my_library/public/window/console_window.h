@@ -1,3 +1,5 @@
+#ifdef _DEBUG
+
 #pragma once
 
 //インクルード
@@ -40,3 +42,5 @@ public:
 };
 
 MY_LIB_NAMESPACE_END
+
+#endif
