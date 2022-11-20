@@ -3,7 +3,10 @@
 //インクルード
 //標準ライブラリ
 #include <Windows.h>
-
+#include <io.h>
+#include <fcntl.h>
+#include <iostream>
+#include <tchar.h>
 
 MY_LIB_NAMESPACE_BEGIN
 
@@ -26,6 +29,11 @@ void CConsoleWindow::Initialize()
 {
 	//コンソールウィンドウを生成
 	AllocConsole();
+
+	//書き込みモードで現在開いているコンソールウィンドウを開く(printfやcoutを使用できるようにする)
+	//fileは結局コンソールウィンドウ閉じられたときに無効になるからローカルで問題ない?
+	FILE* file = nullptr;
+	freopen_s(&file, "CONOUT$", "w", stdout);
 }
 
 /// @brief 終了処理
@@ -33,6 +41,7 @@ void CConsoleWindow::Finalize()
 {
 	//コンソールウィンドウを破棄
 	FreeConsole();
+
 }
 
 /// @brief シングルトンのインスタンスを生成

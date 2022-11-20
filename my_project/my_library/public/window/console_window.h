@@ -36,6 +36,7 @@ public:
 
 	/// @brief シングルトンのインスタンス削除
 	static void Delete();
+
 };
 
 MY_LIB_NAMESPACE_END
