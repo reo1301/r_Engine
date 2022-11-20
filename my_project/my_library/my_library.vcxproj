@@ -127,6 +127,9 @@
       <NoEntryPoint>true</NoEntryPoint>
     </Link>
     <Lib />
+    <Lib>
+      <AdditionalDependencies>d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -147,6 +150,9 @@
       <NoEntryPoint>true</NoEntryPoint>
     </Link>
     <Lib />
+    <Lib>
+      <AdditionalDependencies>d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="public\graphics\graphics_engine.h" />
