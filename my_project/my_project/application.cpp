@@ -1,5 +1,9 @@
 #include "application.h"
 
+//インクルード
+//グラフィック系
+#include "graphics/graphics_engine.h"
+
 GAME_NAMESPACE_BEGIN
 
 //初期化
@@ -20,13 +24,17 @@ CApplication::~CApplication()
 /// @brief 初期化処理
 void CApplication::Initialize()
 {
-
+	//グラフィックスエンジン
+	CGraphicsEngine::CreateInstance();
+	CGraphicsEngine::GetInstance().Initialize();
 }
 
 /// @brief 終了処理
 void CApplication::Finalize()
 {
-
+	//グラフィックスエンジン
+	CGraphicsEngine::GetInstance().Finalize();
+	CGraphicsEngine::Delete();
 }
 
 /// @brief 更新処理

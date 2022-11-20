@@ -2,7 +2,7 @@
 
 //インクルード
 //コピー禁止
-#include "noncopyable.h"
+#include "../noncopyable.h"
 
 MY_LIB_NAMESPACE_BEGIN
 
@@ -16,8 +16,23 @@ public:
 	/// @brief デストラクタ
 	~CGraphicsEngine();
 
+public:
+	/// @brief 初期化処理
+	void Initialize();
+
+	/// @brief 終了処理
+	void Finalize();
+
 private:
-	static CGraphicsEngine* s_instance;
+#ifdef _DEBUG
+
+	/// @brief デバッグレイヤーの初期化
+	void InitDebugLayer();
+
+#endif
+
+private:
+	static CGraphicsEngine* s_instance;		//シングルトンのインスタンス
 
 public:
 	/// @brief シングルトンのインスタンス生成
