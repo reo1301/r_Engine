@@ -40,7 +40,8 @@ void CApplication::Finalize()
 /// @brief 更新処理
 void CApplication::Update()
 {
-
+	CGraphicsEngine& graphicsEngine = CGraphicsEngine::GetInstance();
+	graphicsEngine.Update();
 }
 
 /// @brief シングルトンイのインスタンスの生成

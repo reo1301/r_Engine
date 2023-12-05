@@ -13,17 +13,20 @@
 #include "window/console_window.h"
 #endif
 
+#define WINDOW_WIDTH		1280		//解像度の横幅
+#define WINDOW_HEIGHT		720			//解像度の縦幅
+
 /// @brief 初期化処理
-void Initialize(HINSTANCE _hInstance);
+void Initialize(const HINSTANCE _hInstance, const int _showCmd);
 /// @brief 終了処理
 void Finalize();
 /// @brief 更新処理
 void Update();
 
-int WINAPI WinMain(_In_ HINSTANCE _hInstance, _In_opt_  HINSTANCE /*_hPrevInstance*/, _In_ LPSTR /*_lpCmdLine*/, _In_ int /*_nShowCmd*/)
+int WINAPI WinMain(_In_ HINSTANCE _hInstance, _In_opt_  HINSTANCE /*_hPrevInstance*/, _In_ LPSTR /*_lpCmdLine*/, _In_ int _nShowCmd)
 {
 	//初期化処理
-	Initialize(_hInstance);
+	Initialize(_hInstance, _nShowCmd);
 
 	//メッセージループ
 	MSG msg = {};
@@ -46,7 +49,8 @@ int WINAPI WinMain(_In_ HINSTANCE _hInstance, _In_opt_  HINSTANCE /*_hPrevInstan
 
 /// @brief 初期化処理
 /// @param _hInstance インスタンスハンドル
-void Initialize(HINSTANCE _hInstance)
+/// @param _showCmd ウィンドウの表示方法
+void Initialize(const HINSTANCE _hInstance, const int _showCmd)
 {
 #ifdef _DEBUG
 	{
@@ -62,9 +66,9 @@ void Initialize(HINSTANCE _hInstance)
 		CGUIWindow::InitData initData;
 		initData.hInstance = _hInstance;
 		initData.appName = "うぃんどう";
-		initData.width = 800;
-		initData.height = 600;
-		CGUIWindow::GetInstance().Initialize(initData);
+		initData.width = WINDOW_WIDTH;
+		initData.height = WINDOW_HEIGHT;
+		CGUIWindow::GetInstance().Initialize(initData, _showCmd);
 	}
 
 	{

@@ -1,9 +1,5 @@
 #include "public/window/gui_window.h"
 
-//インクルード
-//標準ライブラリ
-#include <Windows.h>
-
 MY_LIB_NAMESPACE_BEGIN
 
 CGUIWindow* CGUIWindow::s_instance = nullptr;
@@ -37,11 +33,11 @@ CGUIWindow::~CGUIWindow()
 
 /// @brief 初期化処理
 /// @param _initData 初期化データ
+/// @param _showCmd 表示方法
 /// @return 初期化に成功したかどうか(成功していればtrue)
-bool CGUIWindow::Initialize(const InitData& _initData)
+bool CGUIWindow::Initialize(const InitData& _initData, const int _showCmd)
 {
 	WNDCLASS wc;
-	HWND hwnd;
 
 	HINSTANCE hInstance = static_cast<HINSTANCE>(_initData.hInstance);
 
@@ -64,8 +60,9 @@ bool CGUIWindow::Initialize(const InitData& _initData)
 	}
 
 	//ウィンドウを作成
-	hwnd = CreateWindow
+	m_windowHandle = CreateWindowEx
 	(
+		0,
 		_initData.appName,
 		_initData.appName,				//ウィンドウの名前
 		WS_OVERLAPPEDWINDOW,
@@ -77,17 +74,21 @@ bool CGUIWindow::Initialize(const InitData& _initData)
 		nullptr
 	);
 
-	if (!hwnd)
+	if (m_windowHandle == 0)
 	{
 		//ウィンドウの作成に失敗
 		return false;
 	}
 
+	//縦幅と横幅を記録しておく
+	m_windowWidth = _initData.width;
+	m_windowHeight = _initData.height;
+
 	//ウィンドウを表示
-	ShowWindow(hwnd, SW_SHOWNORMAL);
+	ShowWindow(m_windowHandle, _showCmd);
 
 	//ウィンドウを再描画
-	UpdateWindow(hwnd);
+	UpdateWindow(m_windowHandle);
 
 	return true;
 }
@@ -96,6 +97,26 @@ bool CGUIWindow::Initialize(const InitData& _initData)
 void CGUIWindow::Finalize()
 {
 
+}
+
+/// @brief ウィンドウハンドル取得
+HWND CGUIWindow::GetGuiWindowHandle() const
+{
+	return m_windowHandle;
+}
+
+/// @brief ウィンドウの横幅を取得
+/// @return ウィンドウの横幅
+unsigned int CGUIWindow::GetWindowWidth() const
+{
+	return m_windowWidth;
+}
+
+/// @brief ウィンドウの縦幅を取得
+/// @return ウィンドウの縦幅
+unsigned int CGUIWindow::GetWindowHeight() const
+{
+	return m_windowHeight;
 }
 
 /// @brief シングルトンのインスタンス生成
