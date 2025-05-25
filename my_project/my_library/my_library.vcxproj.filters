@@ -12,6 +12,9 @@
     <ClInclude Include="public\graphics\graphics_engine.h">
       <Filter>public\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="public\system\file_stream\file_stream.h">
+      <Filter>public\system\file_stream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="public">
@@ -32,6 +35,18 @@
     <Filter Include="private\window">
       <UniqueIdentifier>{45bef279-2d70-4603-bef2-26fb61f61147}</UniqueIdentifier>
     </Filter>
+    <Filter Include="private\system">
+      <UniqueIdentifier>{5c48c7eb-0d51-4315-bd91-b337274f9d72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="private\system\file_stream">
+      <UniqueIdentifier>{3faee4a0-c273-4b23-8c6f-d20eaaf30be7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\system">
+      <UniqueIdentifier>{7671aa0b-9a39-4cd3-914e-8948ea673498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\system\file_stream">
+      <UniqueIdentifier>{8f59e1ff-f5ff-4c89-8794-a7a0e16906df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\window\gui_window.cpp">
@@ -42,6 +57,9 @@
     </ClCompile>
     <ClCompile Include="private\graphics\graphics_engine.cpp">
       <Filter>private\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="private\system\file_stream\file_stream.cpp">
+      <Filter>private\system\file_stream</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

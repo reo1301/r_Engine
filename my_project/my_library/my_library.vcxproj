@@ -157,12 +157,14 @@
   <ItemGroup>
     <ClInclude Include="public\graphics\graphics_engine.h" />
     <ClInclude Include="noncopyable.h" />
+    <ClInclude Include="public\system\file_stream\file_stream.h" />
     <ClInclude Include="public\window\console_window.h" />
     <ClInclude Include="my_lib_def.h" />
     <ClInclude Include="public\window\gui_window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\graphics\graphics_engine.cpp" />
+    <ClCompile Include="private\system\file_stream\file_stream.cpp" />
     <ClCompile Include="private\window\console_window.cpp" />
     <ClCompile Include="private\window\gui_window.cpp" />
   </ItemGroup>
