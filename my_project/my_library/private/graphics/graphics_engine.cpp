@@ -1,11 +1,5 @@
 #include "graphics/graphics_engine.h"
 
-//インクルード
-//標準ライブラリ系
-#include <iostream>
-#include <assert.h>
-
-//ウィンドウ系
 #include "window/gui_window.h"
 
 MY_LIB_NAMESPACE_BEGIN
