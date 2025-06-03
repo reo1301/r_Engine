@@ -74,7 +74,7 @@ void Initialize(const HINSTANCE _hInstance, const int _showCmd)
 	{
 		//アプリケーションクラスの初期化処理
 		CApplication::CreateInstance();
-		CApplication::GetInstance().Initialize();
+		CApplication::GetInstance().Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 }
 
@@ -108,6 +108,9 @@ void Update()
 	{
 		//アプリケーションクラスの更新処理
 		CApplication& application = CApplication::GetInstance();
+		application.PreUpdate();
 		application.Update();
+		application.Draw();
+		application.PostUpdate();
 	}
 }

@@ -24,13 +24,24 @@ public:
 
 public:
 	/// @brief 初期化処理
-	void Initialize();
+	/// @param _windowWidth ウィンドウの横幅
+	/// @param _windowHeight ウィンドウの縦幅
+	void Initialize(unsigned int _windowWidth, unsigned int _windowHeight);
 
 	/// @brief 終了処理
 	void Finalize();
 
+	/// @brief 前更新
+	void PreUpdate();
+
 	/// @brief 更新
 	void Update();
+
+	/// @brief 描画
+	void Draw();
+
+	/// @brief 後更新
+	void PostUpdate();
 
 private:
 #ifdef _DEBUG
@@ -51,9 +62,6 @@ private:
 
 	/// @brief スワップチェーンを作成
 	void CreateSwapChain();
-
-	/// @brief ルートシグネチャを作成
-	void CreateRootSignature();
 
 	/// @brief コマンドアロケータを作成
 	void CreateD3d12CommandAllocator();
@@ -79,6 +87,15 @@ private:
 	/// @brief 描画待機
 	void WaitDraw();
 
+public:
+	/// @brief D3Dデバイスを取得
+	/// @return D3Dデバイス
+	ID3D12Device* GetD3dDevice();
+
+	/// @brief D3Dグラフィックスコマンドリストを取得
+	/// @return D3Dグラフィックスコマンドリスト
+	ID3D12GraphicsCommandList* GetD3dGraphicsCommandList();
+
 private:
 	static CGraphicsEngine* s_instance;		//シングルトンのインスタンス
 
@@ -97,19 +114,20 @@ private:
 	static constexpr float RT_CLEAR_COLOR[4] = { 0.7f, 0.7f, 0.7f, 1.0f };
 
 private:
-	IDXGIFactory4* m_dxgiFactory = nullptr;									//DXGIファクトリ
-	ID3D12Device* m_d3d12Device = nullptr;									//D3D12デバイス
-	ID3D12CommandQueue* m_d3d12CommandQueue = nullptr;						//コマンドキュー
-	IDXGISwapChain3* m_dxgiSwapChain = nullptr;								//スワップチェーン
-	ID3D12RootSignature* m_d3d12RootSignature = nullptr;					//ルートシグネチャ
-	ID3D12CommandAllocator* m_d3d12CommandAllocator = nullptr;				//コマンドアロケータ
-	ID3D12GraphicsCommandList* m_d3d12GraphicsCommandList = nullptr;		//コマンドリスト
-	ID3D12DescriptorHeap* m_d3d12RtvDescriptorHeap = nullptr;				//RTV用ディスクリプタヒープ
-	ID3D12Resource* m_renderTarget[RTV_NUM] = {};							//レンダーターゲット
+	IDXGIFactory4* m_dxgiFactory = nullptr;									// DXGIファクトリ
+	ID3D12Device* m_d3d12Device = nullptr;									// D3D12デバイス
+	ID3D12CommandQueue* m_d3d12CommandQueue = nullptr;						// コマンドキュー
+	IDXGISwapChain3* m_dxgiSwapChain = nullptr;								// スワップチェーン
+	ID3D12CommandAllocator* m_d3d12CommandAllocator = nullptr;				// コマンドアロケータ
+	ID3D12GraphicsCommandList* m_d3d12GraphicsCommandList = nullptr;		// コマンドリスト
+	ID3D12DescriptorHeap* m_d3d12RtvDescriptorHeap = nullptr;				// RTV用ディスクリプタヒープ
+	ID3D12Resource* m_renderTarget[RTV_NUM] = {};							// レンダーターゲット
 	ID3D12Fence* m_d3d12Fence = nullptr;									// フェンス
 	HANDLE m_fenceEvent = nullptr;											// フェンスイベント
 	unsigned long long m_fenceValue = 0;									// フェンスの現在の値
-	unsigned int m_frameIdx = 0;											//現在フレームバッファのインデックス
+	unsigned int m_frameIdx = 0;											//　現在フレームバッファのインデックス
+	unsigned int m_windowWidth = 0;											// ウィンドウの横幅
+	unsigned int m_windowHeight = 0;										// ウィンドウの縦幅
 };
 
 MY_LIB_NAMESPACE_END

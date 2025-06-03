@@ -19,13 +19,24 @@ public:
 
 public:
 	/// @brief 初期化処理
-	void Initialize();
+	/// @param _windowWidth ウィンドウの横幅
+	/// @param _windowHeight ウィンドウの縦幅
+	void Initialize(unsigned int _windowWidth, unsigned int _windowHeight);
 
 	/// @brief 終了処理
 	void Finalize();
 
+	/// @brief 前更新
+	void PreUpdate();
+
 	/// @brief 更新処理
 	void Update();
+
+	/// @brief 描画
+	void Draw();
+	
+	/// @brief 後更新
+	void PostUpdate();
 
 private:
 	static CApplication* s_instance;		//シングルトンのインスタンス

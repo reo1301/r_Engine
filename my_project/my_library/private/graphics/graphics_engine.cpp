@@ -21,8 +21,13 @@ CGraphicsEngine::~CGraphicsEngine()
 }
 
 /// @brief 初期化処理
-void CGraphicsEngine::Initialize()
+/// @param _windowWidth ウィンドウの横幅
+/// @param _windowHeight ウィンドウの縦幅
+void CGraphicsEngine::Initialize(unsigned int _windowWidth, unsigned int _windowHeight)
 {
+	m_windowWidth = _windowWidth;
+	m_windowHeight = _windowHeight;
+
 #ifdef _DEBUG
 	InitDebugLayer();
 #endif
@@ -128,25 +133,22 @@ void CGraphicsEngine::Finalize()
 	}
 }
 
-/// @brief 更新
-void CGraphicsEngine::Update()
+/// @brief 前更新
+void CGraphicsEngine::PreUpdate()
 {
-	HRESULT result;
-
 	if (m_d3d12CommandAllocator == nullptr)
 	{
 		printf("CGraphicsEngine::Update m_d3d12CommandAllocatorがnullです。\n");
+		return;
 	}
 
 	if (m_d3d12GraphicsCommandList == nullptr)
 	{
 		printf("CGraphicsEngine::Update m_d3d12GraphicsCommandListがnullです。\n");
+		return;
 	}
-	
-	m_frameIdx = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 
-	// todo いったんGraphicsEngineですべて描画までやるが、コマンド周りは機能分けする
-	// todo Draw関数なども作成して実行順に気を付ける
+	HRESULT result;
 
 	// コマンドアロケータをリセット
 	result = m_d3d12CommandAllocator->Reset();
@@ -156,7 +158,8 @@ void CGraphicsEngine::Update()
 	result = m_d3d12GraphicsCommandList->Reset(m_d3d12CommandAllocator, nullptr);
 	assert(SUCCEEDED(result));
 
-	// todo PreUpdateなどで、描画前に実行
+	m_frameIdx = m_dxgiSwapChain->GetCurrentBackBufferIndex();
+
 	// レンダーターゲットとして使用できるようになるまで待つ
 	{
 		D3D12_RESOURCE_BARRIER barrier;
@@ -174,13 +177,62 @@ void CGraphicsEngine::Update()
 		m_d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
 	}
 
+	// ビューポートの設定
+	D3D12_VIEWPORT viewport;
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.Width = static_cast<float>(m_windowWidth);
+	viewport.Height = static_cast<float>(m_windowHeight);
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	m_d3d12GraphicsCommandList->RSSetViewports(1, &viewport);
+
+	// シザー矩形の設定
+	D3D12_RECT rect;
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = m_windowWidth;
+	rect.bottom = m_windowHeight;
+	m_d3d12GraphicsCommandList->RSSetScissorRects(1, &rect);
+}
+
+/// @brief 更新
+void CGraphicsEngine::Update()
+{
+	if (m_d3d12Device == nullptr)
+	{
+		printf("CGraphicsEngine::Update m_d3d12Deviceがnullです。\n");
+		return;
+	}
+
+	if (m_d3d12RtvDescriptorHeap == nullptr)
+	{
+		printf("CGraphicsEngine::Update m_d3d12RtvDescriptorHeapがnullです。\n");
+		return;
+	}
+
+	if (m_d3d12GraphicsCommandList == nullptr)
+	{
+		printf("CGraphicsEngine::Update m_d3d12GraphicsCommandListがnullです。\n");
+		return;
+	}
+
 	// レンダーターゲットをセット
 	SetRenderTarget();
 
 	// バックバッファをクリア
 	ClearBackBuffer();
+}
 
-	// todo 描画コマンドを全て積んだ後に実行
+/// @brief 描画
+void CGraphicsEngine::Draw()
+{
+
+}
+
+/// @brief 後更新
+void CGraphicsEngine::PostUpdate()
+{
 	// バックバッファの描画が完了するまで待つ
 	{
 		D3D12_RESOURCE_BARRIER barrier;
@@ -354,58 +406,6 @@ void CGraphicsEngine::CreateSwapChain()
 	m_frameIdx = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 }
 
-/// @brief ルートシグネチャを作成
-void CGraphicsEngine::CreateRootSignature()
-{
-	if (m_d3d12Device == nullptr)
-	{
-		printf("CGraphicsEngine::CreateRootSignature d3dデバイスがnullです\n");
-		return;
-	}
-
-	D3D12_DESCRIPTOR_RANGE descriptorRanges[1] = {};
-	descriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;		//定数バッファとして使用
-	descriptorRanges[0].NumDescriptors = 1;									//ディスクリプタは1つ
-	descriptorRanges[0].BaseShaderRegister = 0;								//シェーダーレジスタの開始インデックスは0
-	descriptorRanges[0].RegisterSpace = 0;									//レジスタ領域は使用しないので0
-	descriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable = {};
-	descriptorTable.NumDescriptorRanges = 1;		//ディスクリプタレンジの数は1
-	descriptorTable.pDescriptorRanges = descriptorRanges;
-
-	D3D12_ROOT_PARAMETER rootParameters[1] = {};
-	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//定数バッファとして使用
-	rootParameters[0].DescriptorTable = descriptorTable;
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;		//すべてのシェーダーからアクセス可能
-
-	//ルートシグネチャを作成
-	D3D12_ROOT_SIGNATURE_DESC desc;
-	desc.NumParameters = _countof(rootParameters);		//ルートパラメータ数
-	desc.pParameters = rootParameters;					//ルートパラメータのポインタ
-	desc.NumStaticSamplers = 0;							//サンプラー数
-	desc.pStaticSamplers = nullptr;						//サンプラーのポインタ
-	desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;		//オプション
-
-	HRESULT result;
-	//ルートシグネチャのシリアライズ
-	ID3DBlob* pSignature = nullptr;
-	result = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &pSignature, nullptr);
-	if (result != S_OK || pSignature == nullptr)
-	{
-		printf("CGraphicsEngine::CreateRootSignature ルートシグネチャのシリアライズに失敗\n");
-		return;
-	}
-
-	//ルートシグネチャの作成
-	result = m_d3d12Device->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&m_d3d12RootSignature));
-	if (result != S_OK || m_d3d12RootSignature == nullptr)
-	{
-		printf("CGraphicsEngine::CreateRootSignature ルートシグネチャの生成に失敗\n");
-		return;
-	}
-}
-
 /// @brief コマンドアロケータを作成
 void CGraphicsEngine::CreateD3d12CommandAllocator()
 {
@@ -531,12 +531,6 @@ void CGraphicsEngine::SetRenderTarget()
 /// @brief バックバッファのクリア
 void CGraphicsEngine::ClearBackBuffer()
 {
-	if (m_dxgiSwapChain == nullptr)
-	{
-		printf("CGraphicsEngine::ClearBackBuffer m_dxgiSwapChainがnullです。\n");
-		return;
-	}
-
 	const unsigned int rtvDescriptorSize = m_d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	D3D12_CPU_DESCRIPTOR_HANDLE currentFrameBufferRTVHandle = m_d3d12RtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	currentFrameBufferRTVHandle.ptr += rtvDescriptorSize * m_frameIdx;
@@ -581,6 +575,20 @@ void CGraphicsEngine::WaitDraw()
 
 		WaitForSingleObject(m_fenceEvent, INFINITE);
 	}
+}
+
+/// @brief D3Dデバイスを取得
+/// @return D3Dデバイス
+ID3D12Device* CGraphicsEngine::GetD3dDevice()
+{
+	return m_d3d12Device;
+}
+
+/// @brief D3Dグラフィックスコマンドリストを取得
+/// @return D3Dグラフィックスコマンドリスト
+ID3D12GraphicsCommandList* CGraphicsEngine::GetD3dGraphicsCommandList()
+{
+	return m_d3d12GraphicsCommandList;
 }
 
 /// @brief シングルトンのインスタンス生成
