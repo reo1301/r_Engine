@@ -61,7 +61,6 @@ private:
 
 private:
 	ID3D12RootSignature* m_rootSignature = nullptr;			// ルートシグネチャ
-	ID3D12DescriptorHeap* m_descriptorHeap = nullptr;		// ディスクリプタヒープ
 	ID3D12PipelineState* m_pipelineState = nullptr;			// パイプラインステート
 	ID3D12Resource* m_vertexBuffer = nullptr;				// 頂点バッファ
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;			// 頂点バッファビュー

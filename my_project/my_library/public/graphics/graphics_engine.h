@@ -10,6 +10,7 @@
 
 // D3Dのラッパー
 #include "graphics/graphics_command_wrapper.h"
+#include "graphics/graphics_descriptor_heap_wrapper.h"
 
 MY_LIB_NAMESPACE_BEGIN
 
@@ -109,10 +110,10 @@ private:
 
 private:
 	CGraphicsCommandWrapper m_commandWrapper;						// D3Dコマンドラッパー
+	CGraphicsDescriptorHeapWrapper m_descriptorHeap;				// RTV用ディスクリプタヒープ
 	IDXGIFactory4* m_dxgiFactory = nullptr;							// DXGIファクトリ
 	ID3D12Device* m_d3d12Device = nullptr;							// D3D12デバイス
 	IDXGISwapChain3* m_dxgiSwapChain = nullptr;						// スワップチェーン
-	ID3D12DescriptorHeap* m_d3d12RtvDescriptorHeap = nullptr;		// RTV用ディスクリプタヒープ
 	ID3D12Resource* m_renderTarget[RTV_NUM] = {};					// レンダーターゲット
 	ID3D12Fence* m_d3d12Fence = nullptr;							// フェンス
 	HANDLE m_fenceEvent = nullptr;									// フェンスイベント

@@ -23,12 +23,6 @@ void CModel::Release()
 		m_rootSignature = nullptr;
 	}
 
-	if (m_descriptorHeap != nullptr)
-	{
-		m_descriptorHeap->Release();
-		m_descriptorHeap = nullptr;
-	}
-
 	if (m_pipelineState != nullptr)
 	{
 		m_pipelineState->Release();

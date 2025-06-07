@@ -77,11 +77,7 @@ void CGraphicsEngine::Finalize()
 	}
 
 	// RTV用のディスクリプタヒープを削除
-	if (m_d3d12RtvDescriptorHeap != nullptr)
-	{
-		m_d3d12RtvDescriptorHeap->Release();
-		m_d3d12RtvDescriptorHeap = nullptr;
-	}
+	m_descriptorHeap.Finalize();
 
 	// スワップチェーンを削除
 	if (m_dxgiSwapChain != nullptr)
@@ -145,18 +141,6 @@ void CGraphicsEngine::PreUpdate()
 /// @brief 更新
 void CGraphicsEngine::Update()
 {
-	if (m_d3d12Device == nullptr)
-	{
-		printf("CGraphicsEngine::Update m_d3d12Deviceがnullです。\n");
-		return;
-	}
-
-	if (m_d3d12RtvDescriptorHeap == nullptr)
-	{
-		printf("CGraphicsEngine::Update m_d3d12RtvDescriptorHeapがnullです。\n");
-		return;
-	}
-
 	// レンダーターゲットをセット
 	SetRenderTarget();
 
@@ -308,32 +292,29 @@ void CGraphicsEngine::CreateSwapChain()
 /// @brief RTV用ディスクリプタヒープを作成
 void CGraphicsEngine::CreateD3d12RtvDescriptorHeap()
 {
-	if (m_d3d12Device == nullptr)
-	{
-		printf("CGraphicsEngine::CreateD3d12DescriptorHeap d3dデバイスがnullです\n");
-		return;
-	}
+	CGraphicsDescriptorHeapWrapper::InitData initData;
+	initData.d3dDevice = m_d3d12Device;
+	initData.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	initData.numDescriptor = RTV_NUM;
 
-	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;		//レンダーターゲットビューとして使用
-	desc.NumDescriptors = RTV_NUM;					//フレームバッファとバックバッファで2
-	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	desc.NodeMask = 0;
-
-	HRESULT result;
-	result = m_d3d12Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_d3d12RtvDescriptorHeap));
-	if (result != S_OK || m_d3d12RtvDescriptorHeap == nullptr)
+	if (!m_descriptorHeap.Initialize(initData))
 	{
-		printf("CGraphicsEngine::CreateD3d12DescriptorHeap ディスクリプタヒープの生成に失敗\n");
-		return;
+		printf("CGraphicsEngine::CreateD3d12RtvDescriptorHeap ディスクリプタヒープの作成に失敗\n");
 	}
 }
 
 /// @brief レンダーターゲットの作成
 void CGraphicsEngine::CreateRenderTarget()
 {
+	ID3D12DescriptorHeap* descriptorHeap = m_descriptorHeap.GetDescriptorHeap();
+	if (descriptorHeap == nullptr)
+	{
+		printf("CGraphicsEngine::CreateRenderTarget descriptorHeapがnullです\n");
+		return;
+	}
+
 	//スワップチェーンのバッファをディスクリプタヒープに登録
-	D3D12_CPU_DESCRIPTOR_HANDLE handle = m_d3d12RtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	const unsigned int rtvDescriptorSize = m_d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	for (unsigned int idx = 0; idx < RTV_NUM; idx++)
 	{
@@ -377,6 +358,13 @@ void CGraphicsEngine::CreateD3d12Fence()
 /// @brief レンダーターゲットのセット
 void CGraphicsEngine::SetRenderTarget()
 {
+	ID3D12DescriptorHeap* descriptorHeap = m_descriptorHeap.GetDescriptorHeap();
+	if (descriptorHeap == nullptr)
+	{
+		printf("CGraphicsEngine::SetRenderTarget descriptorHeapがnullです\n");
+		return;
+	}
+
 	ID3D12GraphicsCommandList* graphicsCommandList = GetD3dGraphicsCommandList();
 	if (graphicsCommandList == nullptr)
 	{
@@ -385,7 +373,7 @@ void CGraphicsEngine::SetRenderTarget()
 	}
 
 	const unsigned int rtvDescriptorSize = m_d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	D3D12_CPU_DESCRIPTOR_HANDLE currentFrameBufferRTVHandle = m_d3d12RtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE currentFrameBufferRTVHandle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	currentFrameBufferRTVHandle.ptr += rtvDescriptorSize * m_frameIdx;
 	graphicsCommandList->OMSetRenderTargets(1, &currentFrameBufferRTVHandle, false, nullptr);
 }
@@ -393,6 +381,13 @@ void CGraphicsEngine::SetRenderTarget()
 /// @brief バックバッファのクリア
 void CGraphicsEngine::ClearBackBuffer()
 {
+	ID3D12DescriptorHeap* descriptorHeap = m_descriptorHeap.GetDescriptorHeap();
+	if (descriptorHeap == nullptr)
+	{
+		printf("CGraphicsEngine::ClearBackBuffer descriptorHeapがnullです\n");
+		return;
+	}
+
 	ID3D12GraphicsCommandList* graphicsCommandList = GetD3dGraphicsCommandList();
 	if (graphicsCommandList == nullptr)
 	{
@@ -401,7 +396,7 @@ void CGraphicsEngine::ClearBackBuffer()
 	}
 
 	const unsigned int rtvDescriptorSize = m_d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	D3D12_CPU_DESCRIPTOR_HANDLE currentFrameBufferRTVHandle = m_d3d12RtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE currentFrameBufferRTVHandle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	currentFrameBufferRTVHandle.ptr += rtvDescriptorSize * m_frameIdx;
 
 	// クリア
