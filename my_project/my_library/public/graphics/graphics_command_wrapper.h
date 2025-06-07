@@ -1,6 +1,8 @@
 #pragma once
 #include <d3d12.h>
 
+MY_LIB_NAMESPACE_BEGIN
+
 class CGraphicsCommandWrapper
 {
 public:
@@ -63,3 +65,5 @@ private:
 	ID3D12CommandAllocator* m_commandAllocator = nullptr;		// コマンドアロケータ
 	ID3D12GraphicsCommandList* m_commandList = nullptr;			// コマンドリスト
 };
+
+MY_LIB_NAMESPACE_END

@@ -1,5 +1,7 @@
 #include "graphics/graphics_command_wrapper.h"
 
+MY_LIB_NAMESPACE_BEGIN
+
 CGraphicsCommandWrapper::CGraphicsCommandWrapper()
 {
 }
@@ -261,3 +263,5 @@ bool CGraphicsCommandWrapper::CreateD3d12CommandList(ID3D12Device* _d3dDevice)
 
 	return true;
 }
+
+MY_LIB_NAMESPACE_END
