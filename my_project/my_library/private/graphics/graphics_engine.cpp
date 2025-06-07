@@ -38,14 +38,7 @@ void CGraphicsEngine::Initialize(unsigned int _windowWidth, unsigned int _window
 	// D3D12デバイスを作成
 	CreateD3d12Device();
 
-	// コマンドキューを作成
-	CreateD3d12CommandQueue();
-
-	// コマンドアロケータを作成
-	CreateD3d12CommandAllocator();
-
-	// コマンドリストを作成
-	CreateD3d12CommandList();
+	m_commandWrapper.Initialize(m_d3d12Device);
 
 	// スワップチェーンを作成
 	CreateSwapChain();
@@ -97,26 +90,8 @@ void CGraphicsEngine::Finalize()
 		m_dxgiSwapChain = nullptr;
 	}
 
-	// コマンドリストを削除
-	if (m_d3d12GraphicsCommandList != nullptr)
-	{
-		m_d3d12GraphicsCommandList->Release();
-		m_d3d12GraphicsCommandList = nullptr;
-	}
-
-	// コマンドアロケータを削除
-	if (m_d3d12CommandAllocator != nullptr)
-	{
-		m_d3d12CommandAllocator->Release();
-		m_d3d12CommandAllocator = nullptr;
-	}
-
-	// コマンドキューを削除
-	if (m_d3d12CommandQueue != nullptr)
-	{
-		m_d3d12CommandQueue->Release();
-		m_d3d12CommandQueue = nullptr;
-	}
+	// コマンド
+	m_commandWrapper.Finalize();
 
 	// D3D12デバイスを削除
 	if (m_d3d12Device != nullptr)
@@ -136,64 +111,35 @@ void CGraphicsEngine::Finalize()
 /// @brief 前更新
 void CGraphicsEngine::PreUpdate()
 {
-	if (m_d3d12CommandAllocator == nullptr)
-	{
-		printf("CGraphicsEngine::Update m_d3d12CommandAllocatorがnullです。\n");
-		return;
-	}
-
-	if (m_d3d12GraphicsCommandList == nullptr)
-	{
-		printf("CGraphicsEngine::Update m_d3d12GraphicsCommandListがnullです。\n");
-		return;
-	}
-
-	HRESULT result;
-
-	// コマンドアロケータをリセット
-	result = m_d3d12CommandAllocator->Reset();
-	assert(SUCCEEDED(result));
-
-	// コマンドリストをリセット
-	result = m_d3d12GraphicsCommandList->Reset(m_d3d12CommandAllocator, nullptr);
-	assert(SUCCEEDED(result));
+	// コマンドのリセット
+	m_commandWrapper.Reset();
 
 	m_frameIdx = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 
-	// レンダーターゲットとして使用できるようになるまで待つ
+	// レンダーターゲットとして使用できるようになるまで待つ(Present -> 描画ターゲット)
+	m_commandWrapper.ResourceBarrier(m_renderTarget[m_frameIdx], D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+	ID3D12GraphicsCommandList* graphicsCommandList = GetD3dGraphicsCommandList();
+	if (graphicsCommandList != nullptr)
 	{
-		D3D12_RESOURCE_BARRIER barrier;
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;		//サブリソースの遷移
-		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		{
-			D3D12_RESOURCE_TRANSITION_BARRIER transition;
-			transition.pResource = m_renderTarget[m_frameIdx];				//レンダーターゲット
-			transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-			transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;			//遷移前の状態(Present)
-			transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;		//遷移後の状態(描画ターゲット)
-			transition.pResource = m_renderTarget[m_frameIdx];
-			barrier.Transition = transition;
-		}
-		m_d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
+		// ビューポートの設定
+		D3D12_VIEWPORT viewport;
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+		viewport.Width = static_cast<float>(m_windowWidth);
+		viewport.Height = static_cast<float>(m_windowHeight);
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		graphicsCommandList->RSSetViewports(1, &viewport);
+
+		// シザー矩形の設定
+		D3D12_RECT rect;
+		rect.left = 0;
+		rect.top = 0;
+		rect.right = m_windowWidth;
+		rect.bottom = m_windowHeight;
+		graphicsCommandList->RSSetScissorRects(1, &rect);
 	}
-
-	// ビューポートの設定
-	D3D12_VIEWPORT viewport;
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
-	viewport.Width = static_cast<float>(m_windowWidth);
-	viewport.Height = static_cast<float>(m_windowHeight);
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	m_d3d12GraphicsCommandList->RSSetViewports(1, &viewport);
-
-	// シザー矩形の設定
-	D3D12_RECT rect;
-	rect.left = 0;
-	rect.top = 0;
-	rect.right = m_windowWidth;
-	rect.bottom = m_windowHeight;
-	m_d3d12GraphicsCommandList->RSSetScissorRects(1, &rect);
 }
 
 /// @brief 更新
@@ -208,12 +154,6 @@ void CGraphicsEngine::Update()
 	if (m_d3d12RtvDescriptorHeap == nullptr)
 	{
 		printf("CGraphicsEngine::Update m_d3d12RtvDescriptorHeapがnullです。\n");
-		return;
-	}
-
-	if (m_d3d12GraphicsCommandList == nullptr)
-	{
-		printf("CGraphicsEngine::Update m_d3d12GraphicsCommandListがnullです。\n");
 		return;
 	}
 
@@ -233,28 +173,11 @@ void CGraphicsEngine::Draw()
 /// @brief 後更新
 void CGraphicsEngine::PostUpdate()
 {
-	// バックバッファの描画が完了するまで待つ
-	{
-		D3D12_RESOURCE_BARRIER barrier;
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;		// サブリソースの遷移
-		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		{
-			D3D12_RESOURCE_TRANSITION_BARRIER transition;
-			transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-			transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;		// 遷移前の状態(描画ターゲット)
-			transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;				// 遷移後の状態(Present)
-			transition.pResource = m_renderTarget[m_frameIdx];
-			barrier.Transition = transition;
-		}
-		m_d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
-	}
+	// バックバッファの描画が完了するまで待つ(描画ターゲット -> Present)
+	m_commandWrapper.ResourceBarrier(m_renderTarget[m_frameIdx], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
-	// コマンドリストをクローズする
-	m_d3d12GraphicsCommandList->Close();
-
-	// コマンドリストを実行
-	ID3D12CommandList* commandLists[] = { m_d3d12GraphicsCommandList };
-	m_d3d12CommandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+	// コマンド実行
+	m_commandWrapper.Execute();
 
 	// 画面のフリップ
 	m_dxgiSwapChain->Present(1, 0);
@@ -316,31 +239,6 @@ void CGraphicsEngine::CreateD3d12Device()
 	}
 }
 
-/// @brief コマンドキューを作成
-void CGraphicsEngine::CreateD3d12CommandQueue()
-{
-	if (m_d3d12Device == nullptr)
-	{
-		printf("CGraphicsEngine::CreateD3d12CommandQueue d3dデバイスがnullです\n");
-		return;
-	}
-
-	//コマンドキューを作成
-	D3D12_COMMAND_QUEUE_DESC desc = {};
-	desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;					//ダイレクトコマンドキュー
-	desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;		//通常の優先度
-	desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;					//GPUタイムアウトが有効
-	desc.NodeMask = 0;											//GPUは1つのみ
-
-	HRESULT result;
-	result = m_d3d12Device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_d3d12CommandQueue));
-	if (result != S_OK || m_d3d12CommandQueue == nullptr)
-	{
-		printf("CGraphicsEngine::CreateD3d12CommandQueue D3D12コマンドキューの生成に失敗\n");
-		return;
-	}
-}
-
 /// @brief スワップチェーンを作成
 void CGraphicsEngine::CreateSwapChain()
 {
@@ -349,7 +247,8 @@ void CGraphicsEngine::CreateSwapChain()
 		printf("CGraphicsEngine::CreateSwapChain dxgiファクトリがnullです\n");
 		return;
 	}
-	if (m_d3d12CommandQueue == nullptr)
+	ID3D12CommandQueue* graphicsCommandQueue = m_commandWrapper.GetCommandQueue();
+	if (graphicsCommandQueue == nullptr)
 	{
 		printf("CGraphicsEngine::CreateSwapChain コマンドキューがnullです\n");
 		return;
@@ -388,7 +287,7 @@ void CGraphicsEngine::CreateSwapChain()
 	//スワップチェーンを作成
 	HRESULT result;
 	IDXGISwapChain* swapChain = nullptr;
-    result = m_dxgiFactory->CreateSwapChain(m_d3d12CommandQueue, &swapChainDesc, &swapChain);
+    result = m_dxgiFactory->CreateSwapChain(graphicsCommandQueue, &swapChainDesc, &swapChain);
 	if (result != S_OK || swapChain == nullptr)
 	{
 		printf("CGraphicsEngine::CreateSwapChain スワップチェーンの作成に失敗\n");
@@ -404,50 +303,6 @@ void CGraphicsEngine::CreateSwapChain()
 	swapChain->Release();
 
 	m_frameIdx = m_dxgiSwapChain->GetCurrentBackBufferIndex();
-}
-
-/// @brief コマンドアロケータを作成
-void CGraphicsEngine::CreateD3d12CommandAllocator()
-{
-	if (m_d3d12Device == nullptr)
-	{
-		printf("CGraphicsEngine::CreateD3d12CommandAllocator d3dデバイスがnullです\n");
-		return;
-	}
-
-	HRESULT result;
-	result = m_d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_d3d12CommandAllocator));
-	if (result != S_OK || m_d3d12CommandAllocator == nullptr)
-	{
-		printf("CGraphicsEngine::CreateD3d12CommandAllocator コマンドアロケータの生成に失敗\n");
-		return;
-	}
-}
-
-/// @brief コマンドリストを作成
-void CGraphicsEngine::CreateD3d12CommandList()
-{
-	if (m_d3d12CommandAllocator == nullptr)
-	{
-		printf("CGraphicsEngine::CreateD3d12CommandList コマンドアロケータがnullです\n");
-		return;
-	}
-	if (m_d3d12Device == nullptr)
-	{
-		printf("CGraphicsEngine::CreateD3d12CommandList d3dデバイスがnullです\n");
-		return;
-	}
-
-	HRESULT result;
-	result = m_d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_d3d12CommandAllocator, nullptr, IID_PPV_ARGS(&m_d3d12GraphicsCommandList));
-	if (result != S_OK || m_d3d12GraphicsCommandList == nullptr)
-	{
-		printf("CGraphicsEngine::CreateD3d12CommandList コマンドリストの生成に失敗\n");
-		return;
-	}
-
-	//コマンドリストをクローズしておく
-	m_d3d12GraphicsCommandList->Close();
 }
 
 /// @brief RTV用ディスクリプタヒープを作成
@@ -522,29 +377,44 @@ void CGraphicsEngine::CreateD3d12Fence()
 /// @brief レンダーターゲットのセット
 void CGraphicsEngine::SetRenderTarget()
 {
+	ID3D12GraphicsCommandList* graphicsCommandList = GetD3dGraphicsCommandList();
+	if (graphicsCommandList == nullptr)
+	{
+		printf("CGraphicsEngine::SetRenderTarget graphicsCommandListがnullです\n");
+		return;
+	}
+
 	const unsigned int rtvDescriptorSize = m_d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	D3D12_CPU_DESCRIPTOR_HANDLE currentFrameBufferRTVHandle = m_d3d12RtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	currentFrameBufferRTVHandle.ptr += rtvDescriptorSize * m_frameIdx;
-	m_d3d12GraphicsCommandList->OMSetRenderTargets(1, &currentFrameBufferRTVHandle, false, nullptr);
+	graphicsCommandList->OMSetRenderTargets(1, &currentFrameBufferRTVHandle, false, nullptr);
 }
 
 /// @brief バックバッファのクリア
 void CGraphicsEngine::ClearBackBuffer()
 {
+	ID3D12GraphicsCommandList* graphicsCommandList = GetD3dGraphicsCommandList();
+	if (graphicsCommandList == nullptr)
+	{
+		printf("CGraphicsEngine::SetRenderTarget graphicsCommandListがnullです\n");
+		return;
+	}
+
 	const unsigned int rtvDescriptorSize = m_d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	D3D12_CPU_DESCRIPTOR_HANDLE currentFrameBufferRTVHandle = m_d3d12RtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	currentFrameBufferRTVHandle.ptr += rtvDescriptorSize * m_frameIdx;
 
 	// クリア
-	m_d3d12GraphicsCommandList->ClearRenderTargetView(currentFrameBufferRTVHandle, RT_CLEAR_COLOR, 0, nullptr);
+	graphicsCommandList->ClearRenderTargetView(currentFrameBufferRTVHandle, RT_CLEAR_COLOR, 0, nullptr);
 }
 
 /// @brief 描画待機
 void CGraphicsEngine::WaitDraw()
 {
-	if (m_d3d12CommandQueue == nullptr)
+	ID3D12CommandQueue* graphicsCommandQueue = m_commandWrapper.GetCommandQueue();
+	if (graphicsCommandQueue == nullptr)
 	{
-		printf("CGraphicsEngine::WaitDraw m_d3d12CommandQueueがnullです\n");
+		printf("CGraphicsEngine::WaitDraw graphicsCommandQueueがnullです\n");
 	}
 
 	if (m_d3d12Fence == nullptr)
@@ -554,7 +424,7 @@ void CGraphicsEngine::WaitDraw()
 
 	HRESULT result;
 	const unsigned long long nowFenceValue = m_fenceValue;
-	result = m_d3d12CommandQueue->Signal(m_d3d12Fence, nowFenceValue);
+	result = graphicsCommandQueue->Signal(m_d3d12Fence, nowFenceValue);
 	m_fenceValue++;
 
 	if (result != S_OK)
@@ -588,7 +458,7 @@ ID3D12Device* CGraphicsEngine::GetD3dDevice()
 /// @return D3Dグラフィックスコマンドリスト
 ID3D12GraphicsCommandList* CGraphicsEngine::GetD3dGraphicsCommandList()
 {
-	return m_d3d12GraphicsCommandList;
+	return m_commandWrapper.GetCommandList();
 }
 
 /// @brief シングルトンのインスタンス生成

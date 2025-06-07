@@ -8,6 +8,9 @@
 #include <d3d12.h>
 #include <dxgi1_4.h>
 
+// D3Dのラッパー
+#include "graphics/graphics_command_wrapper.h"
+
 MY_LIB_NAMESPACE_BEGIN
 
 #define RTV_NUM	2		//レンダーターゲットの数(フレームバッファとバックバッファで2)
@@ -57,17 +60,8 @@ private:
 	/// @brief D3D12デバイスを作成
 	void CreateD3d12Device();
 
-	/// @brief コマンドキューを作成
-	void CreateD3d12CommandQueue();
-
 	/// @brief スワップチェーンを作成
 	void CreateSwapChain();
-
-	/// @brief コマンドアロケータを作成
-	void CreateD3d12CommandAllocator();
-
-	/// @brief コマンドリストを作成
-	void CreateD3d12CommandList();
 
 	/// @brief RTV用ディスクリプタヒープを作成
 	void CreateD3d12RtvDescriptorHeap();
@@ -114,20 +108,18 @@ private:
 	static constexpr float RT_CLEAR_COLOR[4] = { 0.7f, 0.7f, 0.7f, 1.0f };
 
 private:
-	IDXGIFactory4* m_dxgiFactory = nullptr;									// DXGIファクトリ
-	ID3D12Device* m_d3d12Device = nullptr;									// D3D12デバイス
-	ID3D12CommandQueue* m_d3d12CommandQueue = nullptr;						// コマンドキュー
-	IDXGISwapChain3* m_dxgiSwapChain = nullptr;								// スワップチェーン
-	ID3D12CommandAllocator* m_d3d12CommandAllocator = nullptr;				// コマンドアロケータ
-	ID3D12GraphicsCommandList* m_d3d12GraphicsCommandList = nullptr;		// コマンドリスト
-	ID3D12DescriptorHeap* m_d3d12RtvDescriptorHeap = nullptr;				// RTV用ディスクリプタヒープ
-	ID3D12Resource* m_renderTarget[RTV_NUM] = {};							// レンダーターゲット
-	ID3D12Fence* m_d3d12Fence = nullptr;									// フェンス
-	HANDLE m_fenceEvent = nullptr;											// フェンスイベント
-	unsigned long long m_fenceValue = 0;									// フェンスの現在の値
-	unsigned int m_frameIdx = 0;											//　現在フレームバッファのインデックス
-	unsigned int m_windowWidth = 0;											// ウィンドウの横幅
-	unsigned int m_windowHeight = 0;										// ウィンドウの縦幅
+	CGraphicsCommandWrapper m_commandWrapper;						// D3Dコマンドラッパー
+	IDXGIFactory4* m_dxgiFactory = nullptr;							// DXGIファクトリ
+	ID3D12Device* m_d3d12Device = nullptr;							// D3D12デバイス
+	IDXGISwapChain3* m_dxgiSwapChain = nullptr;						// スワップチェーン
+	ID3D12DescriptorHeap* m_d3d12RtvDescriptorHeap = nullptr;		// RTV用ディスクリプタヒープ
+	ID3D12Resource* m_renderTarget[RTV_NUM] = {};					// レンダーターゲット
+	ID3D12Fence* m_d3d12Fence = nullptr;							// フェンス
+	HANDLE m_fenceEvent = nullptr;									// フェンスイベント
+	unsigned long long m_fenceValue = 0;							// フェンスの現在の値
+	unsigned int m_frameIdx = 0;									//　現在フレームバッファのインデックス
+	unsigned int m_windowWidth = 0;									// ウィンドウの横幅
+	unsigned int m_windowHeight = 0;								// ウィンドウの縦幅
 };
 
 MY_LIB_NAMESPACE_END

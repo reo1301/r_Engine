@@ -30,6 +30,9 @@
     <ClInclude Include="public\graphics\model\model_utility.h">
       <Filter>public\graphics\model</Filter>
     </ClInclude>
+    <ClInclude Include="public\graphics\graphics_command_wrapper.h">
+      <Filter>public\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="public">
@@ -96,6 +99,9 @@
     </ClCompile>
     <ClCompile Include="private\graphics\model\model_render.cpp">
       <Filter>private\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="private\graphics\graphics_command_wrapper.cpp">
+      <Filter>private\graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
