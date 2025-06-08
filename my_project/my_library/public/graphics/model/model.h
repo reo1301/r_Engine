@@ -1,7 +1,7 @@
 #pragma once
 #include "shader/shader.h"
 #include "graphics/model/model_def.h"
-#include "graphics/graphics_pipeline_state_wrapper.h"
+#include "graphics/pipeline_state_wrapper.h"
 #include <d3d12.h>
 
 MY_LIB_NAMESPACE_BEGIN

@@ -1,4 +1,4 @@
-#include "graphics/graphics_descriptor_heap_wrapper.h"
+#include "graphics/descriptor_heap_wrapper.h"
 
 CGraphicsDescriptorHeapWrapper::CGraphicsDescriptorHeapWrapper()
 {

@@ -155,15 +155,15 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="public\graphics\descriptor_heap_wrapper.h" />
     <ClInclude Include="public\graphics\graphics_command_wrapper.h" />
-    <ClInclude Include="public\graphics\graphics_descriptor_heap_wrapper.h" />
     <ClInclude Include="public\graphics\graphics_engine.h" />
     <ClInclude Include="noncopyable.h" />
-    <ClInclude Include="public\graphics\graphics_pipeline_state_wrapper.h" />
     <ClInclude Include="public\graphics\model\model.h" />
     <ClInclude Include="public\graphics\model\model_def.h" />
     <ClInclude Include="public\graphics\model\model_render.h" />
     <ClInclude Include="public\graphics\model\model_utility.h" />
+    <ClInclude Include="public\graphics\pipeline_state_wrapper.h" />
     <ClInclude Include="public\shader\shader.h" />
     <ClInclude Include="public\system\file_stream\file_stream.h" />
     <ClInclude Include="public\window\console_window.h" />
@@ -171,12 +171,12 @@
     <ClInclude Include="public\window\gui_window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="private\graphics\descriptor_heap_wrapper.cpp" />
     <ClCompile Include="private\graphics\graphics_command_wrapper.cpp" />
-    <ClCompile Include="private\graphics\graphics_descriptor_heap_wrapper.cpp" />
     <ClCompile Include="private\graphics\graphics_engine.cpp" />
-    <ClCompile Include="private\graphics\graphics_pipeline_state_wrapper.cpp" />
     <ClCompile Include="private\graphics\model\model.cpp" />
     <ClCompile Include="private\graphics\model\model_render.cpp" />
+    <ClCompile Include="private\graphics\pipeline_state_wrapper.cpp" />
     <ClCompile Include="private\shader\shader.cpp" />
     <ClCompile Include="private\system\file_stream\file_stream.cpp" />
     <ClCompile Include="private\window\console_window.cpp" />

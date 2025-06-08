@@ -1,4 +1,4 @@
-#include "graphics/graphics_pipeline_state_wrapper.h"
+#include "graphics/pipeline_state_wrapper.h"
 #include "shader/shader.h"
 
 MY_LIB_NAMESPACE_BEGIN

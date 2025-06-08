@@ -10,7 +10,7 @@
 
 // D3D‚Ìƒ‰ƒbƒp[
 #include "graphics/graphics_command_wrapper.h"
-#include "graphics/graphics_descriptor_heap_wrapper.h"
+#include "graphics/descriptor_heap_wrapper.h"
 
 MY_LIB_NAMESPACE_BEGIN
 

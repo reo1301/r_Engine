@@ -33,10 +33,10 @@
     <ClInclude Include="public\graphics\graphics_command_wrapper.h">
       <Filter>public\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="public\graphics\graphics_descriptor_heap_wrapper.h">
+    <ClInclude Include="public\graphics\descriptor_heap_wrapper.h">
       <Filter>public\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="public\graphics\graphics_pipeline_state_wrapper.h">
+    <ClInclude Include="public\graphics\pipeline_state_wrapper.h">
       <Filter>public\graphics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -109,11 +109,11 @@
     <ClCompile Include="private\graphics\graphics_command_wrapper.cpp">
       <Filter>private\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="private\graphics\graphics_descriptor_heap_wrapper.cpp">
-      <Filter>private\graphics</Filter>
+    <ClCompile Include="private\graphics\descriptor_heap_wrapper.cpp">
+      <Filter>private\graphics\model</Filter>
     </ClCompile>
-    <ClCompile Include="private\graphics\graphics_pipeline_state_wrapper.cpp">
-      <Filter>private\graphics</Filter>
+    <ClCompile Include="private\graphics\pipeline_state_wrapper.cpp">
+      <Filter>private\graphics\model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
