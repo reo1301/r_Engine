@@ -1,6 +1,7 @@
 #pragma once
 #include "shader/shader.h"
 #include "graphics/model/model_def.h"
+#include "graphics/graphics_pipeline_state_wrapper.h"
 #include <d3d12.h>
 
 MY_LIB_NAMESPACE_BEGIN
@@ -51,17 +52,8 @@ private:
 	/// @return 成否
 	bool LoadShader(const CShader::ShaderInitData& _vsInitData, const CShader::ShaderInitData& _psInitData);
 
-	/// @brief ルートシグネチャを作成
-	/// @return 成否
-	bool CreateRootSignature();
-
-	/// @brief ディスクリプタヒープを作成
-	/// @return 成否
-	bool CreateDescriptorHeap();
-
 private:
-	ID3D12RootSignature* m_rootSignature = nullptr;			// ルートシグネチャ
-	ID3D12PipelineState* m_pipelineState = nullptr;			// パイプラインステート
+	CGraphicsPipelineStateWrapper m_pipelineState;			// パイプラインステート
 	ID3D12Resource* m_vertexBuffer = nullptr;				// 頂点バッファ
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;			// 頂点バッファビュー
 	CShader m_vertexShader;		// 頂点シェーダー

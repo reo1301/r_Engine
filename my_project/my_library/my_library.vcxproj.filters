@@ -36,6 +36,9 @@
     <ClInclude Include="public\graphics\graphics_descriptor_heap_wrapper.h">
       <Filter>public\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="public\graphics\graphics_pipeline_state_wrapper.h">
+      <Filter>public\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="public">
@@ -107,6 +110,9 @@
       <Filter>private\graphics</Filter>
     </ClCompile>
     <ClCompile Include="private\graphics\graphics_descriptor_heap_wrapper.cpp">
+      <Filter>private\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="private\graphics\graphics_pipeline_state_wrapper.cpp">
       <Filter>private\graphics</Filter>
     </ClCompile>
   </ItemGroup>
