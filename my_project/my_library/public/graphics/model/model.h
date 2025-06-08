@@ -2,6 +2,7 @@
 #include "shader/shader.h"
 #include "graphics/model/model_def.h"
 #include "graphics/pipeline_state_wrapper.h"
+#include "graphics/vertex_buffer.h"
 #include <d3d12.h>
 
 MY_LIB_NAMESPACE_BEGIN
@@ -9,19 +10,12 @@ MY_LIB_NAMESPACE_BEGIN
 class CModel
 {
 public:
-	struct VertexData
-	{
-		const float* vertexDataPtr = nullptr;
-		unsigned long long vertexDataSize = 0;
-		unsigned long long vertexDataStride = 0;
-	};
-
 	struct ModelInitData
 	{
-		VertexData vertexData;
-		CShader::ShaderInitData vsInitData;
-		CShader::ShaderInitData psInitData;
-		MODEL_INPUT_LAYOUT_TYPE inputLayoutType = MODEL_INPUT_LAYOUT_TYPE_NONE;
+		CVertexBuffer::VertexData vertexData;		// 頂点データ
+		CShader::ShaderInitData vsInitData;			// 頂点シェーダー初期化データ
+		CShader::ShaderInitData psInitData;			// ピクセルシェーダー初期化データ
+		MODEL_INPUT_LAYOUT_TYPE inputLayoutType = MODEL_INPUT_LAYOUT_TYPE_NONE;		// 入力レイアウトタイプ
 	};
 
 public:
@@ -53,9 +47,8 @@ private:
 	bool LoadShader(const CShader::ShaderInitData& _vsInitData, const CShader::ShaderInitData& _psInitData);
 
 private:
-	CGraphicsPipelineStateWrapper m_pipelineState;			// パイプラインステート
-	ID3D12Resource* m_vertexBuffer = nullptr;				// 頂点バッファ
-	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;			// 頂点バッファビュー
+	CGraphicsPipelineStateWrapper m_pipelineState;		// パイプラインステート
+	CVertexBuffer m_vertexBuffer;						// 頂点バッファ
 	CShader m_vertexShader;		// 頂点シェーダー
 	CShader m_pixelShader;		// ピクセルシェーダー
 };

@@ -14,14 +14,13 @@ CModel::~CModel()
 /// @brief 開放
 void CModel::Release()
 {
-	if (m_vertexBuffer != nullptr)
-	{
-		m_vertexBuffer->Release();
-		m_vertexBuffer = nullptr;
-	}
+	// 頂点バッファ
+	m_vertexBuffer.Finalize();
 
+	// パイプラインステート
 	m_pipelineState.Finalize();
 
+	// シェーダー
 	m_vertexShader.Release();
 	m_pixelShader.Release();
 }
@@ -31,13 +30,6 @@ void CModel::Release()
 /// @return 成否
 bool CModel::Initialize(const ModelInitData& _initData)
 {
-	const VertexData& vertexData = _initData.vertexData;
-	if ((vertexData.vertexDataPtr == nullptr) || (vertexData.vertexDataSize == 0) || (vertexData.vertexDataStride == 0))
-	{
-		printf("CModel::Initialize 頂点データが無効\n");
-		return false;
-	}
-
 	if ((_initData.inputLayoutType == MODEL_INPUT_LAYOUT_TYPE_NONE) || (_initData.inputLayoutType >= MODEL_INPUT_LAYOUT_TYPE_NUM))
 	{
 		printf("CModel::Initialize inputLayoutTypeが無効です\n");
@@ -81,50 +73,21 @@ bool CModel::Initialize(const ModelInitData& _initData)
 	pipelineStateInitData.psShader = &m_pixelShader;
 	pipelineStateInitData.inputElementList = inputDesc;
 	pipelineStateInitData.inputElementNum = elementNum;
-	m_pipelineState.Initialize(pipelineStateInitData);
-
-	// ヒーププロパティ
-	D3D12_HEAP_PROPERTIES heapProp = {};
-	heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
-	heapProp.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	heapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-	heapProp.CreationNodeMask = 1;
-	heapProp.VisibleNodeMask = 1;
-
-	// リソース状態
-	D3D12_RESOURCE_DESC resourceDesc = {};
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Alignment = 0;
-	resourceDesc.Width = vertexData.vertexDataSize;
-	resourceDesc.Height = 1;
-	resourceDesc.DepthOrArraySize = 1;
-	resourceDesc.MipLevels = 1;
-	resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
-
-	HRESULT result = d3dDevice->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_vertexBuffer));
-	if (FAILED(result))
+	if (!m_pipelineState.Initialize(pipelineStateInitData))
 	{
-		printf("CModel::Initialize 頂点バッファの作成に失敗。\n");
+		printf("CModel::Initialize パイプラインステートの初期化に失敗\n");
 		return false;
 	}
 
-	// 頂点バッファにコピー
-	void* vertexPtr = nullptr;
-	result = m_vertexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&vertexPtr));
-	if (FAILED(result))
+	// 頂点バッファ作成
+	CVertexBuffer::InitData vertexBufferInitData;
+	vertexBufferInitData.d3dDevice = d3dDevice;
+	vertexBufferInitData.vertexData = _initData.vertexData;
+	if (!m_vertexBuffer.Initialize(vertexBufferInitData))
 	{
-		printf("CModel::Initialize 頂点バッファのマップに失敗\n");
+		printf("CModel::Initialize 頂点バッファの初期化に失敗\n");
 		return false;
 	}
-	memcpy_s(vertexPtr, vertexData.vertexDataSize, vertexData.vertexDataPtr, vertexData.vertexDataSize);
-	m_vertexBuffer->Unmap(0, nullptr);
-
-	m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-	m_vertexBufferView.SizeInBytes = static_cast<UINT>(vertexData.vertexDataSize);
-	m_vertexBufferView.StrideInBytes = static_cast<UINT>(vertexData.vertexDataStride);
 
 	return true;
 }
@@ -152,7 +115,7 @@ void CModel::Draw()
 		return;
 	}
 
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewList[] = { m_vertexBufferView };
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewList[] = { m_vertexBuffer.GetVertexBufferView() };
 	// ドローコールをコマンドリストに積む
 	d3dGraphicsCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	d3dGraphicsCommandList->IASetVertexBuffers(0, _countof(vertexBufferViewList), vertexBufferViewList);

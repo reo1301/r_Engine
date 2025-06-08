@@ -39,6 +39,9 @@
     <ClInclude Include="public\graphics\pipeline_state_wrapper.h">
       <Filter>public\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="public\graphics\vertex_buffer.h">
+      <Filter>public\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="public">
@@ -113,6 +116,9 @@
       <Filter>private\graphics</Filter>
     </ClCompile>
     <ClCompile Include="private\graphics\pipeline_state_wrapper.cpp">
+      <Filter>private\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="private\graphics\vertex_buffer.cpp">
       <Filter>private\graphics</Filter>
     </ClCompile>
   </ItemGroup>

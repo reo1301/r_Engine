@@ -164,6 +164,7 @@
     <ClInclude Include="public\graphics\model\model_render.h" />
     <ClInclude Include="public\graphics\model\model_utility.h" />
     <ClInclude Include="public\graphics\pipeline_state_wrapper.h" />
+    <ClInclude Include="public\graphics\vertex_buffer.h" />
     <ClInclude Include="public\shader\shader.h" />
     <ClInclude Include="public\system\file_stream\file_stream.h" />
     <ClInclude Include="public\window\console_window.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="private\graphics\model\model.cpp" />
     <ClCompile Include="private\graphics\model\model_render.cpp" />
     <ClCompile Include="private\graphics\pipeline_state_wrapper.cpp" />
+    <ClCompile Include="private\graphics\vertex_buffer.cpp" />
     <ClCompile Include="private\shader\shader.cpp" />
     <ClCompile Include="private\system\file_stream\file_stream.cpp" />
     <ClCompile Include="private\window\console_window.cpp" />
