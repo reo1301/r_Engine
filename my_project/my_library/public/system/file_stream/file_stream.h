@@ -7,8 +7,8 @@ class CFileStream
 public:
 	enum FileStreamType
 	{
-		FileStreamType_None = 0,		// 無効
-		FileStreamType_Read,			// 読み込み
+		FileStreamType_None = -1,		// 無効
+		FileStreamType_Read = 0,		// 読み込み
 		FileStreamType_ReadBinary,		// 読み込み(バイナリ)
 		FileStreamType_Write,			// 書き込み
 		FileStreamType_WriteBinary,		// 書き込み(バイナリ)

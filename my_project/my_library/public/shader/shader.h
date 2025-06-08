@@ -9,8 +9,8 @@ class CShader
 public:
 	enum ShaderType
 	{
-		ShaderType_None = 0,		// 無効
-		ShaderType_Vertex,			// 頂点シェーダー
+		ShaderType_None = -1,		// 無効
+		ShaderType_Vertex = 0,		// 頂点シェーダー
 		ShaderType_Pixel,			// ピクセルシェーダー
 
 		ShaderType_Num
