@@ -110,10 +110,10 @@
       <Filter>private\graphics</Filter>
     </ClCompile>
     <ClCompile Include="private\graphics\descriptor_heap_wrapper.cpp">
-      <Filter>private\graphics\model</Filter>
+      <Filter>private\graphics</Filter>
     </ClCompile>
     <ClCompile Include="private\graphics\pipeline_state_wrapper.cpp">
-      <Filter>private\graphics\model</Filter>
+      <Filter>private\graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
