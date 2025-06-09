@@ -1,4 +1,5 @@
 #include "graphics/descriptor_heap_wrapper.h"
+#include "graphics/graphics_engine.h"
 
 CGraphicsDescriptorHeapWrapper::CGraphicsDescriptorHeapWrapper()
 {
@@ -58,7 +59,9 @@ bool CGraphicsDescriptorHeapWrapper::CreateDescriptorHeap(const InitData& _initD
 		return true;
 	}
 
-	if (_initData.d3dDevice == nullptr)
+	ID3D12Device* d3dDevice = CGraphicsEngine::GetInstance().GetD3dDevice();
+
+	if (d3dDevice == nullptr)
 	{
 		printf("CGraphicsDescriptorHeapWrapper::CreateDescriptorHeap _d3dDeviceがnullです\n");
 		return false;
@@ -71,7 +74,7 @@ bool CGraphicsDescriptorHeapWrapper::CreateDescriptorHeap(const InitData& _initD
 	desc.NodeMask = 0;
 
 	HRESULT result;
-	result = _initData.d3dDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_descriptorHeap));
+	result = d3dDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_descriptorHeap));
 	if (result != S_OK || m_descriptorHeap == nullptr)
 	{
 		printf("CGraphicsEngine::CreateD3d12DescriptorHeap ディスクリプタヒープの生成に失敗\n");

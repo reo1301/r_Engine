@@ -8,7 +8,6 @@ class CGraphicsDescriptorHeapWrapper
 public:
 	struct InitData
 	{
-		ID3D12Device* d3dDevice = nullptr;		// d3dデバイス
 		D3D12_DESCRIPTOR_HEAP_TYPE heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;		// ヒープタイプ
 		unsigned int numDescriptor = 0;			// ディスクリプタ数
 	};

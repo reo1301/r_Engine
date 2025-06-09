@@ -1,4 +1,5 @@
 #include "graphics/pipeline_state_wrapper.h"
+#include "graphics/graphics_engine.h"
 #include "shader/shader.h"
 
 MY_LIB_NAMESPACE_BEGIN
@@ -18,7 +19,7 @@ CGraphicsPipelineStateWrapper::~CGraphicsPipelineStateWrapper()
 /// @return 成否
 bool CGraphicsPipelineStateWrapper::Initialize(const InitData& _initData)
 {
-	if (!CreateRootSignature(_initData))
+	if (!CreateRootSignature())
 	{
 		printf("CGraphicsPipelineStateWrapper::Initialize ルートシグネチャの作成に失敗\n");
 		return false;
@@ -73,13 +74,13 @@ void CGraphicsPipelineStateWrapper::Release()
 }
 
 /// @brief ルートシグネチャ作成
-/// @param _initData 初期化データ
 /// @return 成否
-bool CGraphicsPipelineStateWrapper::CreateRootSignature(const InitData& _initData)
+bool CGraphicsPipelineStateWrapper::CreateRootSignature()
 {
-	if (_initData.d3dDevice == nullptr)
+	ID3D12Device* d3dDevice = CGraphicsEngine::GetInstance().GetD3dDevice();
+	if (d3dDevice == nullptr)
 	{
-		printf("CGraphicsPipelineStateWrapper::CreateRootSignature d3dデバイスがnullです\n");
+		printf("CGraphicsPipelineStateWrapper::CreateRootSignature d3dDeviceがnullです\n");
 		return false;
 	}
 
@@ -103,7 +104,7 @@ bool CGraphicsPipelineStateWrapper::CreateRootSignature(const InitData& _initDat
 	}
 
 	//ルートシグネチャの作成
-	result = _initData.d3dDevice->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+	result = d3dDevice->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
 	if (result != S_OK || m_rootSignature == nullptr)
 	{
 		printf("CModel::CreateRootSignature ルートシグネチャの生成に失敗\n");
@@ -118,9 +119,10 @@ bool CGraphicsPipelineStateWrapper::CreateRootSignature(const InitData& _initDat
 /// @return 成否
 bool CGraphicsPipelineStateWrapper::CreatePipelineState(const InitData& _initData)
 {
-	if (_initData.d3dDevice == nullptr)
+	ID3D12Device* d3dDevice = CGraphicsEngine::GetInstance().GetD3dDevice();
+	if (d3dDevice == nullptr)
 	{
-		printf("CGraphicsPipelineStateWrapper::CreatePipelineState d3dデバイスがnullです\n");
+		printf("CGraphicsPipelineStateWrapper::CreatePipelineState d3dDeviceがnullです\n");
 		return false;
 	}
 
@@ -203,7 +205,7 @@ bool CGraphicsPipelineStateWrapper::CreatePipelineState(const InitData& _initDat
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.NodeMask = 0;
 
-	HRESULT result = _initData.d3dDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&m_pipelineState));
+	HRESULT result = d3dDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&m_pipelineState));
 	if (FAILED(result))
 	{
 		printf("CGraphicsPipelineStateWrapper::CreatePipelineState パイプラインステートの作成に失敗。\n");

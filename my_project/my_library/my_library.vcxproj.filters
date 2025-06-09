@@ -42,6 +42,9 @@
     <ClInclude Include="public\graphics\vertex_buffer.h">
       <Filter>public\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="public\graphics\shader_resource_interface.h">
+      <Filter>public\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="public">
@@ -119,6 +122,9 @@
       <Filter>private\graphics</Filter>
     </ClCompile>
     <ClCompile Include="private\graphics\vertex_buffer.cpp">
+      <Filter>private\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="private\graphics\shader_resource_interface.cpp">
       <Filter>private\graphics</Filter>
     </ClCompile>
   </ItemGroup>

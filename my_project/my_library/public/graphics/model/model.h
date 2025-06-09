@@ -12,9 +12,9 @@ class CModel
 public:
 	struct ModelInitData
 	{
-		CVertexBuffer::VertexData vertexData;		// 頂点データ
-		CShader::ShaderInitData vsInitData;			// 頂点シェーダー初期化データ
-		CShader::ShaderInitData psInitData;			// ピクセルシェーダー初期化データ
+		CVertexBuffer::InitData vertexData;		// 頂点データ
+		CShader::ShaderInitData vsInitData;		// 頂点シェーダー初期化データ
+		CShader::ShaderInitData psInitData;		// ピクセルシェーダー初期化データ
 		MODEL_INPUT_LAYOUT_TYPE inputLayoutType = MODEL_INPUT_LAYOUT_TYPE_NONE;		// 入力レイアウトタイプ
 	};
 

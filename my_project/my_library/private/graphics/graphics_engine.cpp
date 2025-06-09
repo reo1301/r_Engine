@@ -38,7 +38,7 @@ void CGraphicsEngine::Initialize(unsigned int _windowWidth, unsigned int _window
 	// D3D12デバイスを作成
 	CreateD3d12Device();
 
-	m_commandWrapper.Initialize(m_d3d12Device);
+	m_commandWrapper.Initialize();
 
 	// スワップチェーンを作成
 	CreateSwapChain();
@@ -293,7 +293,6 @@ void CGraphicsEngine::CreateSwapChain()
 void CGraphicsEngine::CreateD3d12RtvDescriptorHeap()
 {
 	CGraphicsDescriptorHeapWrapper::InitData initData;
-	initData.d3dDevice = m_d3d12Device;
 	initData.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	initData.numDescriptor = RTV_NUM;
 

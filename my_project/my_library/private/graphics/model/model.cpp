@@ -54,7 +54,6 @@ bool CModel::Initialize(const ModelInitData& _initData)
 
 	// パイプラインステート作成
 	CGraphicsPipelineStateWrapper::InitData pipelineStateInitData;
-	pipelineStateInitData.d3dDevice = d3dDevice;
 	pipelineStateInitData.vsShader = &m_vertexShader;
 	pipelineStateInitData.psShader = &m_pixelShader;
 	pipelineStateInitData.inputElementList = inputDesc;
@@ -67,8 +66,7 @@ bool CModel::Initialize(const ModelInitData& _initData)
 
 	// 頂点バッファ作成
 	CVertexBuffer::InitData vertexBufferInitData;
-	vertexBufferInitData.d3dDevice = d3dDevice;
-	vertexBufferInitData.vertexData = _initData.vertexData;
+	vertexBufferInitData = _initData.vertexData;
 	if (!m_vertexBuffer.Initialize(vertexBufferInitData))
 	{
 		printf("CModel::Initialize 頂点バッファの初期化に失敗\n");
@@ -81,9 +79,6 @@ bool CModel::Initialize(const ModelInitData& _initData)
 /// @brief 終了
 void CModel::Finalize()
 {
-	// 頂点バッファ
-	m_vertexBuffer.Finalize();
-
 	// パイプラインステート
 	m_pipelineState.Finalize();
 

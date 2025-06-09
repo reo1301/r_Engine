@@ -10,9 +10,8 @@ public:
 	~CGraphicsCommandWrapper();
 
 	/// @brief 初期化
-	/// @param _d3dDevice d3dデバイス
 	/// @return 成否
-	bool Initialize(ID3D12Device* _d3dDevice);
+	bool Initialize();
 
 	/// @brief 終了
 	void Finalize();
@@ -46,19 +45,16 @@ private:
 	void Release();
 
 	/// @brief コマンドキューを作成
-	/// @param _d3dDevice d3dデバイス
 	/// @return 成否
-	bool CreateD3d12CommandQueue(ID3D12Device* _d3dDevice);
+	bool CreateD3d12CommandQueue();
 
 	/// @brief コマンドアロケータを作成
-	/// @param _d3dDevice d3dデバイス
 	/// @return 成否
-	bool CreateD3d12CommandAllocator(ID3D12Device* _d3dDevice);
+	bool CreateD3d12CommandAllocator();
 
 	/// @brief コマンドリストを作成
-	/// @param _d3dDevice d3dデバイス
 	/// @return 成否
-	bool CreateD3d12CommandList(ID3D12Device* _d3dDevice);
+	bool CreateD3d12CommandList();
 
 private:
 	ID3D12CommandQueue* m_commandQueue = nullptr;				// コマンドキュー

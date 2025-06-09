@@ -1,4 +1,5 @@
 #include "graphics/graphics_command_wrapper.h"
+#include "graphics/graphics_engine.h"
 
 MY_LIB_NAMESPACE_BEGIN
 
@@ -12,26 +13,25 @@ CGraphicsCommandWrapper::~CGraphicsCommandWrapper()
 }
 
 /// @brief 初期化
-/// @param _d3dDevice d3dデバイス
 /// @return 成否
-bool CGraphicsCommandWrapper::Initialize(ID3D12Device* _d3dDevice)
+bool CGraphicsCommandWrapper::Initialize()
 {
 	// コマンドキューを作成
-	if (!CreateD3d12CommandQueue(_d3dDevice))
+	if (!CreateD3d12CommandQueue())
 	{
 		printf("CGraphicsCommandWrapper::Initialize コマンドキューの作成に失敗\n");
 		return false;
 	}
 
 	// コマンドアロケータを作成
-	if (!CreateD3d12CommandAllocator(_d3dDevice))
+	if (!CreateD3d12CommandAllocator())
 	{
 		printf("CGraphicsCommandWrapper::Initialize コマンドアロケータの作成に失敗\n");
 		return false;
 	}
 
 	// コマンドリストを作成
-	if (!CreateD3d12CommandList(_d3dDevice))
+	if (!CreateD3d12CommandList())
 	{
 		printf("CGraphicsCommandWrapper::Initialize コマンドリストの作成に失敗\n");
 		return false;
@@ -167,9 +167,8 @@ void CGraphicsCommandWrapper::Release()
 
 
 /// @brief コマンドキューを作成
-/// @param _d3dDevice d3dデバイス
 /// @return 成否
-bool CGraphicsCommandWrapper::CreateD3d12CommandQueue(ID3D12Device* _d3dDevice)
+bool CGraphicsCommandWrapper::CreateD3d12CommandQueue()
 {
 	if (m_commandQueue != nullptr)
 	{
@@ -177,9 +176,10 @@ bool CGraphicsCommandWrapper::CreateD3d12CommandQueue(ID3D12Device* _d3dDevice)
 		return true;
 	}
 
-	if (_d3dDevice == nullptr)
+	ID3D12Device* d3dDevice = CGraphicsEngine::GetInstance().GetD3dDevice();
+	if (d3dDevice == nullptr)
 	{
-		printf("CGraphicsCommandWrapper::CreateD3d12CommandQueue _d3dDeviceがnullです\n");
+		printf("CGraphicsCommandWrapper::CreateD3d12CommandQueue d3dDeviceがnullです\n");
 		return false;
 	}
 
@@ -190,7 +190,7 @@ bool CGraphicsCommandWrapper::CreateD3d12CommandQueue(ID3D12Device* _d3dDevice)
 	desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;					//GPUタイムアウトが有効
 	desc.NodeMask = 0;											//GPUは1つのみ
 
-	HRESULT result = _d3dDevice->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_commandQueue));
+	HRESULT result = d3dDevice->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_commandQueue));
 	if (result != S_OK || m_commandQueue == nullptr)
 	{
 		printf("CGraphicsCommandWrapper::CreateD3d12CommandQueue D3D12コマンドキューの生成に失敗\n");
@@ -201,9 +201,8 @@ bool CGraphicsCommandWrapper::CreateD3d12CommandQueue(ID3D12Device* _d3dDevice)
 }
 
 /// @brief コマンドアロケータを作成
-/// @param _d3dDevice d3dデバイス
 /// @return 成否
-bool CGraphicsCommandWrapper::CreateD3d12CommandAllocator(ID3D12Device* _d3dDevice)
+bool CGraphicsCommandWrapper::CreateD3d12CommandAllocator()
 {
 	if (m_commandAllocator != nullptr)
 	{
@@ -211,13 +210,14 @@ bool CGraphicsCommandWrapper::CreateD3d12CommandAllocator(ID3D12Device* _d3dDevi
 		return true;
 	}
 
-	if (_d3dDevice == nullptr)
+	ID3D12Device* d3dDevice = CGraphicsEngine::GetInstance().GetD3dDevice();
+	if (d3dDevice == nullptr)
 	{
-		printf("CGraphicsCommandWrapper::CreateD3d12CommandAllocator _d3dDeviceがnullです\n");
+		printf("CGraphicsCommandWrapper::CreateD3d12CommandAllocator d3dDeviceがnullです\n");
 		return false;
 	}
 
-	HRESULT result = _d3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator));
+	HRESULT result = d3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator));
 	if (result != S_OK || m_commandAllocator == nullptr)
 	{
 		printf("CGraphicsCommandWrapper::CreateD3d12CommandAllocator コマンドアロケータの生成に失敗\n");
@@ -229,9 +229,8 @@ bool CGraphicsCommandWrapper::CreateD3d12CommandAllocator(ID3D12Device* _d3dDevi
 
 
 /// @brief コマンドリストを作成
-/// @param _d3dDevice d3dデバイス
 /// @return 成否
-bool CGraphicsCommandWrapper::CreateD3d12CommandList(ID3D12Device* _d3dDevice)
+bool CGraphicsCommandWrapper::CreateD3d12CommandList()
 {
 	if (m_commandList != nullptr)
 	{
@@ -245,13 +244,14 @@ bool CGraphicsCommandWrapper::CreateD3d12CommandList(ID3D12Device* _d3dDevice)
 		return false;
 	}
 
-	if (_d3dDevice == nullptr)
+	ID3D12Device* d3dDevice = CGraphicsEngine::GetInstance().GetD3dDevice();
+	if (d3dDevice == nullptr)
 	{
-		printf("CGraphicsCommandWrapper::CreateD3d12CommandList d3dデバイスがnullです\n");
+		printf("CGraphicsCommandWrapper::CreateD3d12CommandList d3dDeviceがnullです\n");
 		return false;
 	}
 
-	HRESULT result = _d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator, nullptr, IID_PPV_ARGS(&m_commandList));
+	HRESULT result = d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator, nullptr, IID_PPV_ARGS(&m_commandList));
 	if (result != S_OK || m_commandList == nullptr)
 	{
 		printf("CGraphicsCommandWrapper::CreateD3d12CommandList コマンドリストの生成に失敗\n");

@@ -11,7 +11,6 @@ class CGraphicsPipelineStateWrapper
 public:
 	struct InitData
 	{
-		ID3D12Device* d3dDevice = nullptr;							// d3dデバイス
 		CShader* vsShader = nullptr;								// 頂点シェーダー
 		CShader* psShader = nullptr;								// ピクセルシェーダー
 		D3D12_INPUT_ELEMENT_DESC* inputElementList = nullptr;		// 入力レイアウト
@@ -40,9 +39,8 @@ private:
 	void Release();
 
 	/// @brief ルートシグネチャ作成
-	/// @param _initData 初期化データ
 	/// @return 成否
-	bool CreateRootSignature(const InitData& _initData);
+	bool CreateRootSignature();
 
 	/// @brief パイプラインステート作成
 	/// @param _initData 初期化データ
