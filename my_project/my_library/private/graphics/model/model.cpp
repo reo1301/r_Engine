@@ -11,20 +11,6 @@ CModel::~CModel()
 {
 }
 
-/// @brief 開放
-void CModel::Release()
-{
-	// 頂点バッファ
-	m_vertexBuffer.Finalize();
-
-	// パイプラインステート
-	m_pipelineState.Finalize();
-
-	// シェーダー
-	m_vertexShader.Release();
-	m_pixelShader.Release();
-}
-
 /// @brief 初期化
 /// @param _initData 初期化データ
 /// @return 成否
@@ -92,6 +78,19 @@ bool CModel::Initialize(const ModelInitData& _initData)
 	return true;
 }
 
+/// @brief 終了
+void CModel::Finalize()
+{
+	// 頂点バッファ
+	m_vertexBuffer.Finalize();
+
+	// パイプラインステート
+	m_pipelineState.Finalize();
+
+	// 開放
+	Release();
+}
+
 /// @brief 更新
 void CModel::Update()
 {
@@ -126,6 +125,14 @@ void CModel::Draw()
 void CModel::PostUpdate()
 {
 
+}
+
+/// @brief 開放
+void CModel::Release()
+{
+	// シェーダー
+	m_vertexShader.Release();
+	m_pixelShader.Release();
 }
 
 /// @brief シェーダーのロード

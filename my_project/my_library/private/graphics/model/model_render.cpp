@@ -23,7 +23,7 @@ void CModelRender::Finalize()
 	{
 		if (model != nullptr)
 		{
-			model->Release();
+			model->Finalize();
 			delete(model);
 			model = nullptr;
 		}

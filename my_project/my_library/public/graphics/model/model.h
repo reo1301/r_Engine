@@ -22,13 +22,13 @@ public:
 	CModel();
 	~CModel();
 
-	/// @brief 開放
-	void Release();
-
 	/// @brief 初期化
 	/// @param _initData 初期化データ
 	/// @return 成否
 	bool Initialize(const ModelInitData& _initData);
+
+	/// @brief 終了
+	void Finalize();
 
 	/// @brief 更新
 	void Update();
@@ -40,6 +40,9 @@ public:
 	void PostUpdate();
 
 private:
+	/// @brief 開放
+	void Release();
+
 	/// @brief シェーダーのロード
 	/// @param _vsInitData 頂点シェーダー初期化データ
 	/// @param _psInitData ピクセルシェーダー初期化データ
