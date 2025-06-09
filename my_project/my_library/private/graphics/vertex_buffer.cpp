@@ -79,6 +79,12 @@ void CVertexBuffer::Release()
 /// @return 成否
 bool CVertexBuffer::CreateResource(const InitData& _initData)
 {
+	if (_initData.d3dDevice == nullptr)
+	{
+		printf("CVertexBuffer::CreateResource d3dDeviceがnullです\n");
+		return false;
+	}
+
 	// ヒーププロパティ
 	D3D12_HEAP_PROPERTIES heapProp = {};
 	heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
