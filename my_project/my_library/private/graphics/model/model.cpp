@@ -119,7 +119,7 @@ void CModel::Draw()
 	// ドローコールをコマンドリストに積む
 	d3dGraphicsCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	d3dGraphicsCommandList->IASetVertexBuffers(0, _countof(vertexBufferViewList), vertexBufferViewList);
-	d3dGraphicsCommandList->DrawInstanced(3, 1, 0, 0);
+	d3dGraphicsCommandList->DrawInstanced(m_vertexBuffer.GetVertexCount(), 1, 0, 0);
 }
 
 /// @brief 後更新

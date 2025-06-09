@@ -39,6 +39,8 @@ bool CVertexBuffer::Initialize(const InitData& _initData)
 		return false;
 	}
 
+	m_vertexCount = static_cast<unsigned int>(_initData.vertexData.vertexDataSize / _initData.vertexData.vertexDataStride);
+
 	return true;
 }
 
@@ -53,6 +55,13 @@ void CVertexBuffer::Finalize()
 const D3D12_VERTEX_BUFFER_VIEW& CVertexBuffer::GetVertexBufferView()
 {
 	return m_vertexBufferView;
+}
+
+/// @brief ’¸“_”‚ğæ“¾
+/// @return ’¸“_”
+unsigned int CVertexBuffer::GetVertexCount()
+{
+	return m_vertexCount;
 }
 
 /// @brief ŠJ•ú
